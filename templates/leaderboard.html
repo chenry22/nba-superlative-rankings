@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ball Knowledge - Leaderboard</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <nav>
+        <div>Ball Knowledge - NBA Player Rankings</div>
+        <div class="links">
+            <a href="/">Matchups</a>
+            <a href="#">Leaderboard</a>
+            <a href="/about">About</a>
+        </div>
+    </nav>
+
+    <div class="leaderboard-container">
+        <h1 id="title">Leaderboard</h1>
+        <div id="leaderboard-change"></div>
+
+        <table id="leaderboard">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+        </table>
+
+        <button id="load-more" onclick="loadMore()">Load More</button>
+    </div>
+
+    <script>
+        let currentCategory = JSON.parse('{{ category|tojson|safe }}');
+
+        let categories = ['ball', 'aura', 'hot', 'like',
+            'scorer', 'defender', 'playmaker', 
+            'controversial', 'franchise', 
+            'roommate', 'leader', 'teammate'
+        ];
+        let categoryLabels = {
+            'ball': 'Best Player', 'aura' : 'Most Aura', 'hot' : 'Most Attractive', 'like': 'Most Likeable',
+            'scorer' : 'Best Scorer', 'defender' : 'Best Defender', 'playmaker' : "Best Playmaker", 
+            'controversial' : 'Most Controversial', 'franchise' : 'Best to Start a Franchise With', 
+            'roommate' : 'Best Roommate', 'leader' : "Best Leader", 'teammate' : "Best Teammate"
+        };
+
+        let changer = document.getElementById('leaderboard-change')
+        for(var c of categories) {
+            let cat = c;
+            let change = document.createElement('a');
+            if (c === currentCategory) {
+                change.classList.add('active');
+            }
+
+            change.classList.add(c);
+            change.href = '#';
+            change.onclick = () => loadLeaderboard(cat);
+            change.text = categoryLabels[c];
+            changer.appendChild(change);
+        }
+    </script>
+
+    <script src="/static/leaderboard.js"></script>
+
+</body>
+</html>

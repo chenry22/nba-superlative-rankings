@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ball Knowledge - Versus</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+
+<body>
+    <nav>
+        <div>Ball Knowledge - NBA Player Rankings</div>
+        <div class="links">
+            <a href="#">Matchups</a>
+            <a href="/leaderboard">Leaderboard</a>
+            <a href="/about">About</a>
+        </div>
+    </nav>
+
+    <h1 id="prompt">{{ prompt }}</h1>
+
+    <div class="players">
+        <div class="player">
+            <div class="player-select" onclick="selectPlayer('{{ p1.id }}')">
+                <img id="img1" src="{{ p1.image }}">
+                <h2 id="name1">{{ p1.name }}</h2>
+            </div>
+            <div class="results"></div>
+        </div>
+
+        <div class="player">
+            <div class="player-select" onclick="selectPlayer('{{ p2.id }}')">
+                <img id="img2" src="{{ p2.image }}">
+                <h2 id="name2">{{ p2.name }}</h2>
+            </div>
+            <div class="results"></div>
+        </div>
+
+    </div>
+
+    <!-- <label>Only Active Players<input id="active-toggle" type="checkbox" checked></label> -->
+
+    <div id="actions">
+        <button class="confirm disabled" onclick="submitVote()">Confirm Selection</button>
+        <button class="skip" onclick="nextMatchup()">Skip Matchup</button>
+    </div>
+
+    <button id="next-button" class="hidden" onclick="nextMatchup()">Next Matchup</button>
+
+    <script>
+        let selected = null;
+        let current = { p1 : JSON.parse('{{ p1|tojson|safe }}'),
+            p2 : JSON.parse('{{ p2|tojson|safe }}'),
+            category : JSON.parse('{{ category|tojson|safe }}')
+        };
+
+        function selectPlayer(id) {
+            document.querySelectorAll(".player-select").forEach(p => p.classList.remove("selected"));
+            if (selected !== id) {
+                event.currentTarget.classList.add("selected");
+                selected = id;
+                document.getElementsByClassName("confirm")[0].classList.remove('disabled');
+            } else {
+                selected = null;
+                document.getElementsByClassName("confirm")[0].classList.add('disabled');
+            }
+        }
+    </script>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
