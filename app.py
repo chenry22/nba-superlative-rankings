@@ -1,8 +1,9 @@
-import random
+import datetime, random, os
 from math import floor
 
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 from nba_api.stats.static import players
+from dotenv import load_dotenv
 
 import firebase_admin
 from firebase_admin import credentials, firestore
@@ -30,7 +31,21 @@ category_prompts = {
 ALL_PLAYERS = players.get_players()
 ACTIVE_PLAYERS = players.get_active_players()
 
-cred = credentials.Certificate("serviceKey.json")
+load_dotenv()
+print(os.environ.get('FIREBASE_PROJECT_ID'))
+# cred = credentials.Certificate("serviceKey.json")
+cred = credentials.Certificate({
+        "type": "service_account",
+        "project_id": os.environ.get('FIREBASE_PROJECT_ID'),
+        "private_key_id": os.environ.get('PRIVATE_KEY_ID'),
+        "private_key": os.environ.get('FIREBASE_PRIVATE_KEY').replace('\\n', '\n'),
+        "client_email": os.environ.get('FIREBASE_CLIENT_EMAIL'),
+        "client_id": os.environ.get('CLIENT_ID'),
+        "auth_uri": os.environ.get('AUTH_URI'),
+        "token_uri": os.environ.get('TOKEN_URI'),
+        "auth_provider_x509_cert_url": os.environ.get('AUTH_PROVIDER_X509_CERT_URL'),
+        "client_x509_cert_url": os.environ.get('CLIENT_X509_CERT_URL'),
+    })
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -154,6 +169,14 @@ def submit():
 
     db.collection("players").document(str(p1["id"])).update({cat : new_r1})
     db.collection("players").document(str(p2["id"])).update({cat : new_r2})
+
+    # ig we can keep track of matchups
+    db.collection("matchups").add({
+        'winner' : int(winner_id),
+        'loser' : p1['id'] if int(winner_id) == p2['id'] else p2['id'],
+        'change' : abs(r1 - new_r1),
+        'time' : datetime.datetime.now()
+    })
 
     return jsonify({
         "p1": {**p1, "before": r1, "after": new_r1, "expected": E1},

@@ -1,0 +1,4 @@
+nba_api
+flask
+firebase-admin
+python-dotenv
