@@ -11,7 +11,7 @@ from firebase_admin import credentials, firestore
 categories = ['ball', 'aura', 'hot', 'like',
     'scorer', 'defender', 'playmaker', 
     'controversial', 'franchise', 
-    'roommate', 'leader', 'teammate'
+    'leader', 'teammate'
 ]
 category_prompts = {
     'ball' : 'Who is the better basketball player?',
@@ -23,7 +23,6 @@ category_prompts = {
     'playmaker' : 'Who is the better playmaker?',
     'controversial' : 'Who is more controversial?',
     'franchise' : "Who would you rather start a franchise with today?",
-    'roommate' : "Who would you rather have as a roommate?",
     'leader' : "Who is a better leader?",
     'teammate' : "Who is a better teammate?"
 }
@@ -59,13 +58,23 @@ def get_headshot_url(player_id):
 def expected(rA, rB):
     return 1 / (1 + 10 ** ((rB - rA) / 400))
 
-def update_elo(rA, rB, winner_is_A, K=32):
+def update_elo(rA, rB, gpA, gpB, winner_is_A):
     EA = expected(rA, rB)
     EB = expected(rB, rA)
 
     SA = 1 if winner_is_A else 0
     SB = 1 if not winner_is_A else 0
-    return (rA + K * (SA - EA), rB + K * (SB - EB), EA, EB)
+
+    # sliding scale, less matchups means voting has greater impact
+    maxK = 40
+    minK = 16
+    scale = 500 # games needeed to half max k value
+    KA = floor(minK + (maxK - minK) / (1 + gpA / scale))
+    KB = floor(minK + (maxK - minK) / (1 + gpB / scale))
+
+    newEA = rA + KA * (SA - EA)
+    newEB = rB + KB * (SB - EB)
+    return (newEA, newEB, EA, EB)
 
 
 
@@ -159,16 +168,21 @@ def submit():
     p1_db = get_or_create(p1)
     p2_db = get_or_create(p2)
 
-    r1, r2 = p1_db[cat], p2_db[cat] 
+    r1, r2, gp1, gp2 = p1_db[cat], p2_db[cat] , p1_db.get('matchups', 0), p2_db.get('matchups', 0)
     if r1 is None: r1 = 1500
     if r2 is None: r2 = 1500
 
-    app.logger.info(f"{winner_id}, { p1['id'] }, {winner_id == p1['id']}")
     winner_is_p1 = (str(winner_id) == str(p1["id"]))
-    new_r1, new_r2, E1, E2 = update_elo(r1, r2, winner_is_p1)
+    new_r1, new_r2, E1, E2 = update_elo(r1, r2, gp1, gp2, winner_is_p1)
 
-    db.collection("players").document(str(p1["id"])).update({cat : new_r1})
-    db.collection("players").document(str(p2["id"])).update({cat : new_r2})
+    db.collection("players").document(str(p1["id"])).update({
+        cat : new_r1, 
+        'matchups' : p1_db.get('matchups', 0) + 1
+    })
+    db.collection("players").document(str(p2["id"])).update({
+        cat : new_r2,
+        'matchups' : p2_db.get('matchups', 0) + 1
+    })
 
     # ig we can keep track of matchups
     db.collection("matchups").add({

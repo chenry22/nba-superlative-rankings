@@ -1,5 +1,10 @@
+let loading = false
+
 async function submitVote() {
+    if (loading) { return; }
     if (!selected) return alert("Pick a player");
+    console.log("Vote submitted...")
+    loading = true;
     const res = await fetch("/submit", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -13,6 +18,7 @@ async function submitVote() {
 
     const data = await res.json();
     showResult(data);
+    loading = false;
 }
 
 function showResult(data) {
