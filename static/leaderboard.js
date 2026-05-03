@@ -41,7 +41,7 @@ async function fetchPage() {
                 <img src="${p.image}" width="40">
                 <div>${p.name}</div>
             </td>
-            <td class='score'>${p[currentCategory] ?? 1500}</td>
+            <td class='score'>${Math.round(p[currentCategory]) ?? 1500}</td>
         `;
 
         row.onclick = () => openPlayer(p.id);

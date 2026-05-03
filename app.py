@@ -178,10 +178,10 @@ def submit():
     new_r1, new_r2, E1, E2 = update_elo(r1, r2, gp1, gp2, winner_is_p1)
 
     db.collection("players").document(str(p1["id"])).update({
-        cat : new_r1, cat + '_matchups' : gp1 + 1
+        cat : round(new_r1, 2), cat + '_matchups' : gp1 + 1
     })
     db.collection("players").document(str(p2["id"])).update({
-        cat : new_r2, cat + '_matchups' : gp2 + 1
+        cat : round(new_r2, 2), cat + '_matchups' : gp2 + 1
     })
 
     # ig we can keep track of matchups
