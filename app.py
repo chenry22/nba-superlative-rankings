@@ -8,26 +8,30 @@ from dotenv import load_dotenv
 import firebase_admin
 from firebase_admin import credentials, firestore
 
-categories = ['ball', 'aura', 'hot', 'like',
-    'scorer', 'defender', 'playmaker', 
-    'controversial', 'franchise', 
-    'leader', 'teammate'
+categories = [
+    'goat', 'ball', 'scorer', 'defender', 'playmaker',
+    'aura', 'hot', 'like', 'controversial', 
+    'franchise', 'leader', 'teammate', 'fighter'
 ]
 category_prompts = {
-    'ball' : 'Who is the better basketball player?',
-    'aura' : 'Who has more aura?',
-    'hot' : "Who is more attractive?",
-    'like' : "Which player do you like more?",
+    'goat' : 'Who has had the better career?',
+    'ball' : 'Who is (currently) the better basketball player?',
     'scorer' : 'Who is the better scorer?',
     'defender' : 'Who is the better defender?',
     'playmaker' : 'Who is the better playmaker?',
+
+    'aura' : 'Who has more aura?',
+    'hot' : "Who is more attractive?",
+    'like' : "Which player do you like more?",
     'controversial' : 'Who is more controversial?',
+
     'franchise' : "Who would you rather start a franchise with today?",
     'leader' : "Who is a better leader?",
-    'teammate' : "Who is a better teammate?"
+    'teammate' : "Who is a better teammate?",
+    'fighter' : "Who would win in a fight?"
 }
 
-ALL_PLAYERS = players.get_players()
+# ALL_PLAYERS = players.get_players()
 ACTIVE_PLAYERS = players.get_active_players()
 
 load_dotenv()
@@ -68,7 +72,7 @@ def update_elo(rA, rB, gpA, gpB, winner_is_A):
     # sliding scale, less matchups means voting has greater impact
     maxK = 40
     minK = 16
-    scale = 500 # games needeed to half max k value
+    scale = 800 # games needeed to half max k value
     KA = floor(minK + (maxK - minK) / (1 + gpA / scale))
     KB = floor(minK + (maxK - minK) / (1 + gpB / scale))
 
@@ -93,7 +97,7 @@ def load_players(active=True):
     if active:
         p1, p2 = random.sample(ACTIVE_PLAYERS, 2)
     else:
-        p1, p2 = random.sample(ALL_PLAYERS, 2)
+        p1, p2 = random.sample(ACTIVE_PLAYERS, 2) # p1, p2 = random.sample(ALL_PLAYERS, 2)
     p1 = { "name": p1["full_name"], "id": p1["id"], "image": get_headshot_url(p1["id"]) }
     p2 = { "name": p2["full_name"], "id": p2["id"], "image": get_headshot_url(p2["id"]) }
     return (p1, p2)
@@ -103,13 +107,13 @@ def load_players(active=True):
 # ROUTES
 @app.route('/')
 def home():
-    cat = categories[floor(random.random() * len(categories))]
+    cat = random.sample(categories, 1)[0]
     p1, p2 = load_players()
     return render_template('rank.html', p1=p1, p2=p2, prompt=category_prompts[cat], category=cat)
 
 @app.route('/leaderboard')
 def reroute_to_main_leaderboard():
-    return redirect('/leaderboard/ball')
+    return redirect('/leaderboard/goat')
 @app.route("/leaderboard/<category>")
 def leaderboard(category):
     return render_template("leaderboard.html", category=category)
@@ -152,7 +156,7 @@ def leaderboard_api(category):
 @app.route("/new_matchup")
 def matchup():
     active = request.args.get("active")
-    cat = categories[floor(random.random() * len(categories))]
+    cat = random.sample(categories, 1)[0]
     p1, p2 = load_players(active)
     return jsonify({"p1": p1, "p2": p2, "prompt": category_prompts[cat], "category": cat})
 
@@ -167,12 +171,8 @@ def submit():
 
     p1_db = get_or_create(p1)
     p2_db = get_or_create(p2)
-    gp1 = p1_db.get(cat + '_matchups', 0)
-    gp2 = p2_db.get(cat + '_matchups', 0)
-
-    r1, r2, gp1, gp2 = p1_db[cat], p2_db[cat] , gp1, gp2
-    if r1 is None: r1 = 1500
-    if r2 is None: r2 = 1500
+    gp1, gp2 = p1_db.get(cat + '_matchups', 0), p2_db.get(cat + '_matchups', 0)
+    r1, r2 = p1_db.get(cat, 1500), p2_db.get(cat, 1500)
 
     winner_is_p1 = (str(winner_id) == str(p1["id"]))
     new_r1, new_r2, E1, E2 = update_elo(r1, r2, gp1, gp2, winner_is_p1)

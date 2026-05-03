@@ -37,32 +37,71 @@
     <script>
         let currentCategory = JSON.parse('{{ category|tojson|safe }}');
 
-        let categories = ['ball', 'aura', 'hot', 'like',
-            'scorer', 'defender', 'playmaker', 
-            'controversial', 'franchise', 
-            'leader', 'teammate'
+        let categories = [
+            'goat', 'ball', 'scorer', 'defender', 'playmaker',
+            'aura', 'hot', 'like', 'controversial', 
+            'franchise', 'leader', 'teammate', 'fighter'
         ];
         let categoryLabels = {
-            'ball': 'Best Player', 'aura' : 'Most Aura', 'hot' : 'Most Attractive', 'like': 'Most Likeable',
-            'scorer' : 'Best Scorer', 'defender' : 'Best Defender', 'playmaker' : "Best Playmaker", 
-            'controversial' : 'Most Controversial', 'franchise' : 'Best to Start a Franchise With', 
-            'leader' : "Best Leader", 'teammate' : "Best Teammate"
+            'goat' : 'The GOAT', 'ball' : 'Best Player (Current)', 'scorer' : 'Best Scorer', 'defender' : 'Best Defender', 'playmaker' : "Best Playmaker",
+
+            'aura' : 'Most Aura', 'hot' : 'Most Attractive', 'like': 'Most Likeable', 'controversial' : 'Most Controversial', 
+
+            'franchise' : 'Best to Start a Franchise With', 'leader' : "Best Leader", 'teammate' : "Best Teammate", 'fighter' : "Most Likely to Win  a Fight"
         };
 
-        let changer = document.getElementById('leaderboard-change')
+        function toggleExpand(row) {
+            let r = document.getElementById(row + "-row");
+            if (r) {
+                let label = r.getElementsByTagName('div')[0];
+                let comp = label.innerText.split(" ");
+                label.innerText = comp[0] + " " + (comp[1] === ">" ? "<" : ">");
+                r.classList.toggle('unexpanded');
+            }
+        }
+
+        let changer = document.getElementById('leaderboard-change');
+        let initState = () => {};
+        let row = document.createElement('div');
+        let rowID = 'ball';
+        row.classList.add('changer-row', 'unexpanded');
+        row.id = rowID + '-row';
+        let label = document.createElement('div');
+        label.classList.add('expand-label');
+        label.innerText = "Ball >";
+        label.onclick = () => toggleExpand('ball');
+        row.appendChild(label);
         for(var c of categories) {
+            if (c === 'aura' || c === 'franchise') {
+                rowID = c === 'aura' ? "vibe" : "role"
+                changer.appendChild(row);
+                row = document.createElement('div');
+                row.classList.add('changer-row', 'unexpanded');
+                row.id = rowID + '-row';
+                label = document.createElement('div');
+                label.classList.add('expand-label');
+                label.innerText =  c === 'aura' ? "Vibe >" : "Role >";
+                let rID = rowID;
+                label.onclick = () => toggleExpand(rID);
+                row.appendChild(label);
+            }
+
             let cat = c;
             let change = document.createElement('a');
             if (c === currentCategory) {
                 change.classList.add('active');
+                let expand = rowID;
+                initState = () => toggleExpand(expand);
             }
 
             change.classList.add(c);
             change.href = '#';
             change.onclick = () => loadLeaderboard(cat);
             change.text = categoryLabels[c];
-            changer.appendChild(change);
+            row.appendChild(change);
         }
+        changer.appendChild(row);
+        initState();
     </script>
 
     <script src="/static/leaderboard.js"></script>

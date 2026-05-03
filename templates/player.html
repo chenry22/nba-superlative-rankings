@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NBA Superlatives</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+    <nav>
+        <div>NBA Superlatives</div>
+        <div class="links">
+            <a href="/">Matchups</a>
+            <a href="/leaderboard">Leaderboard</a>
+            <a href="/about">About</a>
+        </div>
+    </nav>
+
+    <h1 id="player-name">{{ player.name }}</h1>
+    <img id="img1" src="{{ p1.image }}">
+
+    <!-- TODO: rating for current active categories -->
+    <!-- TODO: history of matchups -->
+
+    <script>
+        // let selected = null;
+        // let current = { p1 : JSON.parse('{{ p1|tojson|safe }}'),
+        //     p2 : JSON.parse('{{ p2|tojson|safe }}'),
+        //     category : JSON.parse('{{ category|tojson|safe }}')
+        // };
+
+        // function selectPlayer(id) {
+        //     document.querySelectorAll(".player-select").forEach(p => p.classList.remove("selected"));
+        //     if (selected !== id) {
+        //         event.currentTarget.classList.add("selected");
+        //         selected = id;
+        //         document.getElementsByClassName("confirm")[0].classList.remove('disabled');
+        //     } else {
+        //         selected = null;
+        //         document.getElementsByClassName("confirm")[0].classList.add('disabled');
+        //     }
+        // }
+    </script>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

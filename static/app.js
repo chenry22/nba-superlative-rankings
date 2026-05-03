@@ -38,6 +38,7 @@ function showResult(data) {
 }
 
 async function nextMatchup() {
+    if (loading) { return; }
     document.getElementById("actions").classList.remove('hidden');
     document.getElementById("next-button").classList.add('hidden')
 
