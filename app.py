@@ -167,8 +167,10 @@ def submit():
 
     p1_db = get_or_create(p1)
     p2_db = get_or_create(p2)
+    gp1 = p1_db.get(cat + '_matchups', 0)
+    gp2 = p2_db.get(cat + '_matchups', 0)
 
-    r1, r2, gp1, gp2 = p1_db[cat], p2_db[cat] , p1_db.get('matchups', 0), p2_db.get('matchups', 0)
+    r1, r2, gp1, gp2 = p1_db[cat], p2_db[cat] , gp1, gp2
     if r1 is None: r1 = 1500
     if r2 is None: r2 = 1500
 
@@ -176,12 +178,10 @@ def submit():
     new_r1, new_r2, E1, E2 = update_elo(r1, r2, gp1, gp2, winner_is_p1)
 
     db.collection("players").document(str(p1["id"])).update({
-        cat : new_r1, 
-        'matchups' : p1_db.get('matchups', 0) + 1
+        cat : new_r1, cat + '_matchups' : gp1 + 1
     })
     db.collection("players").document(str(p2["id"])).update({
-        cat : new_r2,
-        'matchups' : p2_db.get('matchups', 0) + 1
+        cat : new_r2, cat + '_matchups' : gp2 + 1
     })
 
     # ig we can keep track of matchups

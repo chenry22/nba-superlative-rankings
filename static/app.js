@@ -53,13 +53,16 @@ async function nextMatchup() {
     selected = null;
     document.getElementsByClassName("confirm")[0].classList.add('disabled');
     document.querySelectorAll(".player-select").forEach(p => p.classList.remove("selected"));
+    document.getElementById("prompt").innerText = data.prompt;
 
     document.getElementsByClassName('player-select')[0].onclick = () => selectPlayer(data.p1.id);
-    document.getElementById("prompt").innerText = data.prompt;
     document.getElementById("img1").src = data.p1.image;
     document.getElementById("name1").innerText = data.p1.name;
+    document.getElementById("stats1").href = `https://www.nba.com/stats/player/${data.p1.id}`;
+
 
     document.getElementsByClassName('player-select')[1].onclick = () => selectPlayer(data.p2.id);
     document.getElementById("img2").src = data.p2.image;
     document.getElementById("name2").innerText = data.p2.name;
+    document.getElementById("stats2").href = `https://www.nba.com/stats/player/${data.p2.id}`;
 }

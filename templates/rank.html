@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ball Knowledge - Versus</title>
+    <title>NBA Superlatives - Matchups</title>
     <link rel="stylesheet" href="/static/styles.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 
 <body>
     <nav>
-        <div>Ball Knowledge - NBA Player Rankings</div>
+        <div>NBA Superlatives</div>
         <div class="links">
             <a href="#">Matchups</a>
             <a href="/leaderboard">Leaderboard</a>
@@ -23,6 +24,7 @@
                 <img id="img1" src="{{ p1.image }}">
                 <h2 id="name1">{{ p1.name }}</h2>
             </div>
+            <a id="stats1" href="https://www.nba.com/stats/player/{{ p1.id }}" target="_blank">Player Profile ↗</a>
             <div class="results"></div>
         </div>
 
@@ -31,6 +33,7 @@
                 <img id="img2" src="{{ p2.image }}">
                 <h2 id="name2">{{ p2.name }}</h2>
             </div>
+            <a id="stats2" href="https://www.nba.com/stats/player/{{ p2.id }}" target="_blank">Player Profile ↗</a>
             <div class="results"></div>
         </div>
 
