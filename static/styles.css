@@ -7,25 +7,27 @@ body {
 
 #prompt {
     font-family: 'Jersey 20';
-    margin: 26px 14dvw;
+    margin: 26px auto;
+    max-width: 800px;
     font-weight: 800;
-    font-size: 3.6rem;
-    line-height: 3rem;
+    font-size: 3.4rem;
+    line-height: 2.8rem;
 }
 .players {
     display: flex;
     justify-content: center;
-    gap: 40px;
+    max-width: 100%;
+    gap: 8%;
 }
 
 .player img {
-    width: 200px;
+    max-width: 200px;
     border-radius: 10px;
 }
 
 .player-select {
     padding: 6px 8px;
-    border-radius: 4px;
+    border-radius: 6px;
     border: 3px solid transparent;
     margin-bottom: 6px;
 }
@@ -70,7 +72,7 @@ body {
 .confirm {
     font-family: 'Jersey 20';
     background-color: rgb(226, 236, 255);
-    font-size: 1.6rem;
+    font-size: 1.8rem;
 }
 .disabled {
     cursor: default !important;
@@ -154,7 +156,8 @@ nav > div {
 }
 #title {
     font-family: 'Jersey 20';
-    margin: 14px 20% 0;
+    margin: 14px 5% 0;
+    max-width: 700px;
     padding: 0;
     font-size: 3.6rem;
 }
@@ -163,10 +166,10 @@ nav > div {
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 6px;
-    max-width: 860px;
+    gap: 8px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 0 32px;
+    padding: 0 24px;
     margin-bottom: 10px;
 }
 #leaderboard-change a {
@@ -176,8 +179,8 @@ nav > div {
     color: white;
     border: 1px solid transparent;
     background-color: rgb(45, 5, 34);
-    padding: 6px 10px;
-    font-size: 0.8rem;
+    padding: 6px 8px;
+    font-size: 0.75rem;
     font-weight: 600;
 }
 .active {
